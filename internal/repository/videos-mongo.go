@@ -10,6 +10,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+var orderMap = map[string]int{
+	"asc":  1,
+	"desc": -1,
+}
+
 type VideoRepository struct {
 	coll *mongo.Collection
 }
@@ -36,7 +41,7 @@ func (yt *VideoRepository) InsertMany(videos []types.Video) error {
 	return nil
 }
 
-func (yt *VideoRepository) Find(query string, limit int64, page int64) ([]types.Video, error) {
+func (yt *VideoRepository) Find(query string, limit int64, page int64, order string) ([]types.Video, error) {
 	filter := bson.D{{
 		"$text", bson.D{{
 			"$search", query,
@@ -44,7 +49,7 @@ func (yt *VideoRepository) Find(query string, limit int64, page int64) ([]types.
 	}}
 	sort := bson.D{
 		{
-			"publishedAt", -1,
+			"publishedAt", orderMap[order],
 		},
 	}
 	opts := options.Find().SetLimit(limit).SetSkip(page * limit).SetSort(sort)
