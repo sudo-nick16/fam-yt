@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 	"net/http"
 
@@ -10,7 +9,6 @@ import (
 	"github.com/sudo-nick16/fam-yt/internal/config"
 	"github.com/sudo-nick16/fam-yt/internal/repository"
 	"github.com/sudo-nick16/fam-yt/internal/server/handlers"
-	"github.com/sudo-nick16/fam-yt/internal/types"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -45,15 +43,7 @@ func Start() {
 
 	e.GET("/api/search", handlers.GetVideo(vidRepo))
 
-	e.POST("/api/queries", func(c echo.Context) error {
-		sq := types.SearchQuery{}
-		json.NewDecoder(c.Request().Body).Decode(&sq)
-		err := searchRepo.Create(sq.Query)
-		if err != nil {
-			return err
-		}
-		return c.JSON(http.StatusCreated, sq)
-	})
+	e.POST("/api/queries", handlers.CreateQuery(searchRepo))
 
 	e.Start(config.Port)
 }

@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"encoding/json"
 	"log"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/sudo-nick16/fam-yt/internal/repository"
+	"github.com/sudo-nick16/fam-yt/internal/types"
 )
 
 func GetVideo(vidRepo *repository.VideoRepository) echo.HandlerFunc {
@@ -42,5 +44,25 @@ func GetVideo(vidRepo *repository.VideoRepository) echo.HandlerFunc {
 			return echo.NewHTTPError(500, "Could not fetch videos.")
 		}
 		return ctx.JSON(200, videos)
+	}
+}
+
+func CreateQuery(searchRepo *repository.SearchRepository) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		sq := types.SearchQuery{}
+		err := json.NewDecoder(ctx.Request().Body).Decode(&sq)
+		if err != nil {
+			return echo.NewHTTPError(500, "Could not parse body.")
+		}
+		if sq.Query == "" {
+			return echo.NewHTTPError(400, "Received empty query.")
+		}
+		err = searchRepo.Create(sq.Query)
+		if err != nil {
+			return echo.NewHTTPError(500, "Could not create query.")
+		}
+		return ctx.JSON(200, map[string]string{
+			"msg": "Query created successfully.",
+		})
 	}
 }

@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"errors"
-	"log"
 	"time"
 
 	"github.com/sudo-nick16/fam-yt/internal/types"
@@ -31,12 +30,10 @@ func (p *SearchRepository) FindAll() ([]types.SearchQuery, error) {
 	}
 	defer cursor.Close(context.Background())
 	queries := []types.SearchQuery{}
-	log.Println("queries", queries)
 	err = cursor.All(context.TODO(), &queries)
 	if err != nil {
 		return nil, err
 	}
-	log.Println("queries", queries)
 	return queries, nil
 }
 
