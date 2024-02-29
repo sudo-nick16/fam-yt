@@ -35,15 +35,10 @@ func StartFetching() {
 	log.Println("[INFO] Fetching videos for pre-defined queries", *sqRepo)
 	log.Println("[INFO] Fetching videos for pre-defined queries", *vidRepo)
 
-	// ytApi, err := ytapi.New([]string{config.YtApiKey}, 5)
-	// if err != nil {
-	// 	log.Panicln("[ERROR] Could not disconnect:", err)
-	// }
-
 	pool := workerpool.NewWorkerPool(10)
 	pool.Start()
 
-	ticker := time.NewTicker(10 * time.Second)
+	ticker := time.NewTicker(time.Duration(config.PollInterval) * time.Second)
 
 	ytApi, err := ytapi.NewYtApi([]string{config.YtApiKey}, 2)
 	if err != nil {
