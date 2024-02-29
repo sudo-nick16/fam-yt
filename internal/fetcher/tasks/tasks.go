@@ -2,7 +2,6 @@ package tasks
 
 import (
 	"log"
-	"time"
 
 	"github.com/sudo-nick16/fam-yt/internal/repository"
 	"github.com/sudo-nick16/fam-yt/internal/types"
@@ -10,8 +9,6 @@ import (
 )
 
 type FetchQueryTask struct {
-	retryCount int
-	maxRetries int
 	query      *types.SearchQuery
 	ytApi      *ytapi.YtApi
 	searchRepo *repository.SearchRepository
@@ -21,22 +18,18 @@ type FetchQueryTask struct {
 func NewFetchQueryTask(ytApi *ytapi.YtApi,
 	searchRepo *repository.SearchRepository,
 	videoRepo *repository.VideoRepository,
-	query *types.SearchQuery,
-	maxRetries int) *FetchQueryTask {
+	query *types.SearchQuery) *FetchQueryTask {
 	return &FetchQueryTask{
 		ytApi:      ytApi,
 		searchRepo: searchRepo,
 		videoRepo:  videoRepo,
 		query:      query,
-		retryCount: 0,
-		maxRetries: maxRetries,
 	}
 }
 
 func (ft *FetchQueryTask) Execute() error {
-	ft.retryCount++
-	videos, err := ft.ytApi.GetLatestVideos(ft.query.Query,
-		ft.query.LatestPublishedAt.Time().Format(time.RFC3339))
+	videos, err := ft.ytApi.GetLatestVideos(ft.query)
+	log.Printf("Got %d videos for query: %s , err: %v\n", len(videos), ft.query.Query, err)
 	if err != nil {
 		return err
 	}
@@ -46,6 +39,7 @@ func (ft *FetchQueryTask) Execute() error {
 	}
 
 	latest := videos[0].PublishedAt
+	log.Printf("Latest video published at: %+v\n", latest)
 
 	// COMMENT: This is not needed because the API already returns the
 	// latest videos after the latestPublishedAt time
@@ -66,11 +60,11 @@ func (ft *FetchQueryTask) Execute() error {
 }
 
 func (ft *FetchQueryTask) Failed() {
-	if ft.retryCount < ft.maxRetries {
-		ft.Execute()
-	}
+	// TODO: handle failure :)
+	// log.Println("Failed to fetch query.")
 }
 
 func (ft *FetchQueryTask) Success() {
 	// TODO: handle success :)
+	// log.Println("Successfully fetched query.")
 }

@@ -1,7 +1,5 @@
 package workerpool
 
-import "log"
-
 type Task interface {
 	Execute() error
 	Failed()
@@ -24,7 +22,6 @@ func (w *Worker) Start() {
 			task := <-*w.taskQueue
 			err := task.Execute()
 			if err != nil {
-				log.Printf("[ERROR] Could not perform task %v", err)
 				task.Failed()
 				continue
 			}

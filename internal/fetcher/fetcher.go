@@ -32,15 +32,13 @@ func StartFetching() {
 	db := client.Database(config.DbName)
 	sqRepo := repository.NewSearchRepository(db, "search-queries")
 	vidRepo := repository.NewVideoRepository(db, "videos")
-	log.Println("[INFO] Fetching videos for pre-defined queries", *sqRepo)
-	log.Println("[INFO] Fetching videos for pre-defined queries", *vidRepo)
 
 	pool := workerpool.NewWorkerPool(10)
 	pool.Start()
 
 	ticker := time.NewTicker(time.Duration(config.PollInterval) * time.Second)
 
-	ytApi, err := ytapi.NewYtApi([]string{config.YtApiKey}, 2)
+	ytApi, err := ytapi.NewYtApi(config.YtApiKeys, config.MaxResults)
 	if err != nil {
 		log.Panicln("[ERROR] Could not create YouTube API client:", err)
 	}
@@ -48,14 +46,15 @@ func StartFetching() {
 	for {
 		select {
 		case <-ticker.C:
+			log.Println("[INFO] tick")
 			queries, err := sqRepo.FindAll()
 			if err != nil {
 				log.Println("[ERROR] Could not fetch queries:", err)
 				continue
 			}
-			log.Println("[INFO] Fetched queries:", queries)
+			log.Println("[INFO] fetched queries:", queries)
 			for _, query := range queries {
-				task := tasks.NewFetchQueryTask(ytApi, sqRepo, vidRepo, &query, 1)
+				task := tasks.NewFetchQueryTask(ytApi, sqRepo, vidRepo, &query)
 				pool.AddTask(task)
 			}
 		}

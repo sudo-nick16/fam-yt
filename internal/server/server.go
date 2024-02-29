@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/sudo-nick16/fam-yt/internal/config"
 	"github.com/sudo-nick16/fam-yt/internal/repository"
 	"github.com/sudo-nick16/fam-yt/internal/server/handlers"
@@ -37,13 +38,17 @@ func Start() {
 	vidRepo := repository.NewVideoRepository(db, "videos")
 	vidRepo.CreateIndex()
 	searchRepo := repository.NewSearchRepository(db, "search-queries")
+	searchRepo.CreateIndex()
 
 	e := echo.New()
+	e.Use(middleware.CORS())
 	e.HTTPErrorHandler = customHTTPErrorHandler
 
-	e.GET("/api/search", handlers.GetVideo(vidRepo))
+	e.GET("/api/videos", handlers.GetVideos(vidRepo))
 
 	e.POST("/api/queries", handlers.CreateQuery(searchRepo))
+
+	e.GET("/api/queries", handlers.GetQueries(searchRepo))
 
 	e.Start(config.Port)
 }

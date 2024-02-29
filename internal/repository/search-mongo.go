@@ -94,3 +94,17 @@ func (p *SearchRepository) Create(query string) error {
 	}
 	return nil
 }
+
+// Creating index to avoid duplicate queries
+func (p *SearchRepository) CreateIndex() error {
+	model := mongo.IndexModel{
+		Keys: bson.D{{
+			"query", 1,
+		}},
+	}
+	_, err := p.coll.Indexes().CreateOne(context.TODO(), model)
+	if err != nil {
+		return err
+	}
+	return nil
+}

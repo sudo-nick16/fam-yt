@@ -1,4 +1,3 @@
-
 server:
 	go run cmd/server/main.go
 
@@ -13,4 +12,3 @@ build-fetcher:
 
 server: cmd/server/main.go
 fetcher: cmd/fetcher/main.go
-
