@@ -2,11 +2,15 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/sudo-nick16/fam-yt/internal/config"
+	"github.com/sudo-nick16/fam-yt/internal/fetcher/tasks"
 	"github.com/sudo-nick16/fam-yt/internal/repository"
 	"github.com/sudo-nick16/fam-yt/internal/types"
+	"github.com/sudo-nick16/fam-yt/internal/ytapi"
 )
 
 func GetVideos(vidRepo *repository.VideoRepository) echo.HandlerFunc {
@@ -48,6 +52,7 @@ func GetVideos(vidRepo *repository.VideoRepository) echo.HandlerFunc {
 		}
 		videos, err := vidRepo.Find(query, int64(limit), int64(page), order)
 		if err != nil {
+			log.Println("[ERROR] Could not fetch videos:", err)
 			return echo.NewHTTPError(500, "Could not fetch videos.")
 		}
 		return ctx.JSON(200, map[string]interface{}{
@@ -56,20 +61,28 @@ func GetVideos(vidRepo *repository.VideoRepository) echo.HandlerFunc {
 	}
 }
 
-func CreateQuery(searchRepo *repository.SearchRepository) echo.HandlerFunc {
+func CreateQuery(searchRepo *repository.SearchRepository,
+	vidRepo *repository.VideoRepository, ytApi *ytapi.YtApi) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		sq := types.SearchQuery{}
-		err := json.NewDecoder(ctx.Request().Body).Decode(&sq)
+		sq := &types.SearchQuery{}
+		err := json.NewDecoder(ctx.Request().Body).Decode(sq)
 		if err != nil {
 			return echo.NewHTTPError(500, "Could not parse body.")
 		}
 		if sq.Query == "" {
 			return echo.NewHTTPError(400, "Received empty query.")
 		}
-		err = searchRepo.Create(sq.Query)
+		sq, err = searchRepo.Create(sq.Query)
 		if err != nil {
 			return echo.NewHTTPError(500, "Could not create query.")
 		}
+		// COMMENT: Initially, we would wait for the fetcher to do this, but
+		// for better ux we'll fetch few results immediately
+		task := tasks.NewFetchQueryTask(ytApi, searchRepo, vidRepo, sq)
+		// COMMENT: We don't need to wait for the task to complete or fail,
+		// because the fetcher will do the same task in the background in the
+		// next interval
+		go task.Execute()
 		return ctx.JSON(200, map[string]string{
 			"msg": "Query created successfully.",
 		})
@@ -84,6 +97,15 @@ func GetQueries(searchRepo *repository.SearchRepository) echo.HandlerFunc {
 		}
 		return ctx.JSON(200, map[string]interface{}{
 			"queries": queries,
+		})
+	}
+}
+
+func GetInfo(config *config.Config) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		return ctx.JSON(200, map[string]interface{}{
+			"pollInterval":    config.PollInterval,
+			"ytApiMaxResults": config.MaxResults,
 		})
 	}
 }

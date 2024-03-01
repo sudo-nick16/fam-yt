@@ -78,25 +78,33 @@ func (p *SearchRepository) UpdateLatest(queryId primitive.ObjectID,
 	return nil
 }
 
-func (p *SearchRepository) Create(query string) error {
-	_, err := p.FindByQuery(query)
-	if err == nil {
-		return errors.New("Query already exists")
-	}
-	t := time.Now()
-	t = t.AddDate(-10, 0, 0)
-	_, err = p.coll.InsertOne(context.TODO(), types.SearchQuery{
+func (p *SearchRepository) Create(query string) (*types.SearchQuery, error) {
+	// COMMENT: This is not needed because of the unique index
+	// _, err := p.FindByQuery(query)
+	// if err == nil {
+	// 	return nil, errors.New("Query already exists")
+	// }
+	sq := types.SearchQuery{
 		Query:             query,
 		LatestPublishedAt: primitive.NewDateTimeFromTime(time.Now().AddDate(-10, 0, 0)),
-	})
-	if err != nil {
-		return err
 	}
-	return nil
+	res, err := p.coll.InsertOne(context.TODO(), sq)
+	if err != nil {
+		return nil, err
+	}
+	if res.InsertedID == nil {
+		return nil, errors.New("Could not insert query")
+	}
+	resId, ok := res.InsertedID.(primitive.ObjectID)
+	if !ok {
+		return nil, errors.New("Could not convert InsertedID to ObjectID")
+	}
+	sq.Id = resId
+	return &sq, nil
 }
 
 // Creating index to avoid duplicate queries
-func (p *SearchRepository) CreateIndex() error {
+func (p *SearchRepository) CreateSimpleIndex() error {
 	model := mongo.IndexModel{
 		Keys: bson.D{{
 			"query", 1,

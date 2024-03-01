@@ -10,6 +10,7 @@ import (
 	"github.com/sudo-nick16/fam-yt/internal/config"
 	"github.com/sudo-nick16/fam-yt/internal/repository"
 	"github.com/sudo-nick16/fam-yt/internal/server/handlers"
+	"github.com/sudo-nick16/fam-yt/internal/ytapi"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -36,9 +37,24 @@ func Start() {
 	}
 	db := client.Database(config.DbName)
 	vidRepo := repository.NewVideoRepository(db, "videos")
-	vidRepo.CreateIndex()
+	err = vidRepo.CreateTextIndex()
+	if err != nil {
+		log.Println("[INFO] Could not ensure text index for videos")
+	} else {
+		log.Println("[INFO] Ensured text index for videos")
+	}
 	searchRepo := repository.NewSearchRepository(db, "search-queries")
-	searchRepo.CreateIndex()
+	err = searchRepo.CreateSimpleIndex()
+	if err != nil {
+		log.Println("[INFO] Could not ensure simple index for search queries")
+	} else {
+		log.Println("[INFO] Ensured simple index for search queries")
+	}
+
+	ytApi, err := ytapi.NewYtApi(config.YtApiKeys, config.MaxResults)
+	if err != nil {
+		log.Panicln("[ERROR] Could not create ytapi:", err)
+	}
 
 	e := echo.New()
 	e.Use(middleware.CORS())
@@ -46,9 +62,11 @@ func Start() {
 
 	e.GET("/api/videos", handlers.GetVideos(vidRepo))
 
-	e.POST("/api/queries", handlers.CreateQuery(searchRepo))
+	e.POST("/api/queries", handlers.CreateQuery(searchRepo, vidRepo, ytApi))
 
 	e.GET("/api/queries", handlers.GetQueries(searchRepo))
+
+	e.GET("/api/info", handlers.GetInfo(config))
 
 	e.Start(config.Port)
 }
