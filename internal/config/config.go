@@ -14,6 +14,7 @@ type Config struct {
 	MaxResults   int
 	DbName       string
 	PollInterval int
+	Env          string
 }
 
 func GetConfig() *Config {
@@ -29,6 +30,7 @@ func GetConfig() *Config {
 	config.DbName = env.GetEnv("DB_NAME", "fam-yt-dev")
 	config.PollInterval = env.GetEnvAsInt("POLL_INTERVAL", 20)
 	config.MaxResults = env.GetEnvAsInt("MAX_RESULTS", 5)
+	config.Env = env.GetEnv("ENV", "dev")
 
 	return config
 }

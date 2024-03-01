@@ -31,8 +31,25 @@ function App() {
 	const [limit, setLimit] = useState(10);
 	const [page, setPage] = useState(1);
 	const [order, setOrder] = useState("desc");
+	const [info, setInfo] = useState({
+		pollInterval: 0,
+		ytApiMaxResults: 0
+	});
 
-	console.log({ API_URL })
+	const fetchInfo = async () => {
+		try {
+			const res = await fetch(`${API_URL}/api/info`, {
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json"
+				}
+			});
+			const data = await res.json();
+			setInfo(data);
+		} catch (err) {
+			console.log("[ERROR]", err);
+		}
+	}
 
 	const addSearchQuery = async (query: string) => {
 		try {
@@ -112,10 +129,18 @@ function App() {
 			}
 		}
 		fetchQueries()
+		fetchInfo()
 	}, [])
 
 	return (
 		<div className="flex flex-col gap-4 max-w-[800px] mx-auto py-4 items-center">
+			<div
+				className="bg-[#212121] fixed top-4 left-4 flex flex-col gap-2 p-2 text-sm rounded-md w-64"
+			>
+				<span><b>Fetcher poll interval: </b>{info.pollInterval} seconds</span>
+				<span><b>Max fetched results per fetcher interval: </b>{info.pollInterval}</span>
+				<span><b>Note:</b> Your added queries results will be cached in the next fetcher cycle.</span>
+			</div>
 			<div className="flex items-center justify-center gap-4">
 				<img src={ytIcon} className="w-10 h-10" />
 				<span className="text-white font-bold">
