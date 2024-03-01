@@ -186,7 +186,7 @@ function App() {
 				</datalist>
 			</div>
 			<div className="w-full flex gap-2 items-center flex-wrap">
-				Predifined Queries:
+				Predefined Queries:
 				{
 					predefinedQueries.map(query => (
 						<p
