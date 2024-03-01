@@ -35,6 +35,12 @@ func Start() {
 	if err != nil {
 		log.Panicln("[ERROR] Could not connect to the database:", err)
 	}
+	err = client.Ping(context.Background(), nil)
+	if err != nil {
+		log.Panicln("[ERROR] Could not ping the database:", err)
+	}
+	log.Println("[INFO] Connected to the database")
+
 	db := client.Database(config.DbName)
 	vidRepo := repository.NewVideoRepository(db, "videos")
 	err = vidRepo.CreateTextIndex()
@@ -46,7 +52,7 @@ func Start() {
 	searchRepo := repository.NewSearchRepository(db, "search-queries")
 	err = searchRepo.CreateSimpleIndex()
 	if err != nil {
-		log.Println("[INFO] Could not ensure simple index for search queries")
+		log.Println("[INFO] Could not ensure simple index for search queries:", err)
 	} else {
 		log.Println("[INFO] Ensured simple index for search queries")
 	}

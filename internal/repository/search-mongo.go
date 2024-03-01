@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // COMMENT: Redis could be used to store search queries
@@ -109,6 +110,7 @@ func (p *SearchRepository) CreateSimpleIndex() error {
 		Keys: bson.D{{
 			"query", 1,
 		}},
+		Options: options.Index().SetUnique(true),
 	}
 	_, err := p.coll.Indexes().CreateOne(context.TODO(), model)
 	if err != nil {
