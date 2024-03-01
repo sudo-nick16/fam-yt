@@ -1,7 +1,10 @@
 ## Fam Yt
 Caches yt results for predefined search queries for faster access.
-Dashboard: [Dashboard](https://fam-yt.sudonick.me)
-Backend: [Backend](https://aws.sudonick.me)
+
+## Live Demo
+- Dashboard: [Dashboard](https://fam-yt.sudonick.me) (hosted on vercel)
+- Backend: [Backend](https://fam-yt-backend.sudonick.me) (hosted on aws,
+uses nginx as reverse proxy)
 
 ## More Info
 This project has three components.
