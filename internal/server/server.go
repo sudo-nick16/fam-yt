@@ -74,5 +74,7 @@ func Start() {
 
 	e.GET("/api/info", handlers.GetInfo(config))
 
-	e.Start(config.Port)
+	if err := e.StartTLS(config.Port, "cert.pem", "key.pem"); err != http.ErrServerClosed {
+		log.Panicln("[ERROR] Could not start the server:", err)
+	}
 }
