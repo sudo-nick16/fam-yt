@@ -11,6 +11,7 @@ type Video = {
 	description: string
 	thumbnail: string
 	publishedAt: string
+	searchQuery: string
 }
 
 type Query = {
@@ -35,6 +36,7 @@ function App() {
 		pollInterval: 0,
 		ytApiMaxResults: 0
 	});
+	const [showNote, setShowNote] = useState(true);
 
 	const fetchInfo = async () => {
 		try {
@@ -83,9 +85,11 @@ function App() {
 					"Content-Type": "application/json"
 				}
 			});
-			const data = await res.json();
+			const data = await res.json() as { videos?: Video[], error?: string };
 			if (data.videos) {
 				setVideos(data.videos);
+				data.videos as Video[]
+				setQuery(data.videos[0].searchQuery)
 				return;
 			}
 			if (data.error) {
@@ -134,13 +138,28 @@ function App() {
 
 	return (
 		<div className="flex flex-col gap-4 max-w-[800px] mx-auto py-4 items-center">
-			<div
-				className="bg-[#212121] fixed top-4 left-4 flex flex-col gap-2 p-2 text-sm rounded-md w-64"
-			>
-				<span><b>Fetcher poll interval: </b>{info.pollInterval} seconds</span>
-				<span><b>Max fetched results per fetcher interval: </b>{info.ytApiMaxResults}</span>
-				<span><b>Note:</b> Your added queries results will be cached in the next fetcher cycle.</span>
-			</div>
+			{
+				showNote ? (
+					<div
+						className="fixed bg-[#212121] top-4 left-4 flex flex-col gap-2 p-2 text-sm rounded-md w-64"
+					>
+						<span><b>Fetcher poll interval: </b>{info.pollInterval} seconds</span>
+						<span><b>Max fetched results per fetcher interval: </b>{info.ytApiMaxResults}</span>
+						<span><b>Note:</b> Your added queries results will be cached in the next fetcher cycle.</span>
+						<button
+							className="bg-[#191919] p-1 px-2 w-fit rounded-md ml-auto"
+							onClick={() => setShowNote(false)}>
+							Hide Info
+						</button>
+					</div>
+				) :
+					<button
+						className="fixed top-4 left-4 bg-[#212121] p-1 px-2 w-fit rounded-md ml-auto"
+						onClick={() => setShowNote(true)}
+					>
+						Show Info
+					</button>
+			}
 			<div className="flex items-center justify-center gap-4">
 				<img src={ytIcon} className="w-10 h-10" />
 				<span className="text-white font-bold">
