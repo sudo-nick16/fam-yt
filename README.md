@@ -1,5 +1,7 @@
 ## Fam Yt
 Caches yt results for predefined search queries for faster access.
+Dashboard: [Dashboard](https://fam-yt.sudonick.me)
+Backend: [Backend](https://aws.sudonick.me)
 
 ## More Info
 This project has three components.
@@ -49,6 +51,11 @@ POST /api/queries
     - query: search query
 - Returns:
     - Success/Error message
+
+GET /api/info
+- Returns:
+    - pollInterval - interval for fetching results
+    - maxResults - fetched by fetcher
 
 ## Screenshots
 ![image](https://github.com/sudo-nick16/fam-yt/assets/73229823/5a2e0246-0358-4bb8-ac8c-2d849ba831c1)
