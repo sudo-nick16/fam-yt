@@ -138,7 +138,7 @@ function App() {
 				className="bg-[#212121] fixed top-4 left-4 flex flex-col gap-2 p-2 text-sm rounded-md w-64"
 			>
 				<span><b>Fetcher poll interval: </b>{info.pollInterval} seconds</span>
-				<span><b>Max fetched results per fetcher interval: </b>{info.pollInterval}</span>
+				<span><b>Max fetched results per fetcher interval: </b>{info.ytApiMaxResults}</span>
 				<span><b>Note:</b> Your added queries results will be cached in the next fetcher cycle.</span>
 			</div>
 			<div className="flex items-center justify-center gap-4">
