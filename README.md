@@ -10,11 +10,11 @@ search queries and stores them in the database.
 3. Web: A dashboard to view the cached results and the search queries. 
 You can also add new search queries from the dashboard.
 
-## Features Implemented
+## Stuff Implemented
 - [x] Poller and Fetcher (Used worker pool for fetching results)
-- [x] Server for serving cached results
+- [x] Server for serving cached results (With Pagination & Sorting)
 - [x] Api key rotation when quota exceeds
-- [x] Dashboard (sort order, add new search queries, pagination, result limit)
+- [x] Dashboard UI
 
 ## Tech Stack 
 - Golang (Echo Framework)
@@ -27,7 +27,7 @@ Have the env variables ready, you can use the `env.example` file as a template.
 ```
 make server
 make fetcher
-
+make web
 ```
 
 ## API Documentation
