@@ -2,7 +2,7 @@ package workerpool
 
 type Task interface {
 	Execute() error
-	Failed()
+	Failed(error)
 	Success()
 }
 
@@ -22,7 +22,7 @@ func (w *Worker) Start() {
 			task := <-*w.taskQueue
 			err := task.Execute()
 			if err != nil {
-				task.Failed()
+				task.Failed(err)
 				continue
 			}
 			task.Success()

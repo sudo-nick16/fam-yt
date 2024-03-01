@@ -29,11 +29,10 @@ func NewFetchQueryTask(ytApi *ytapi.YtApi,
 
 func (ft *FetchQueryTask) Execute() error {
 	videos, err := ft.ytApi.GetLatestVideos(&ft.query)
-	log.Printf("Got %d videos for query: %s , err: %v\n", len(videos), ft.query.Query, err)
+	log.Printf("Got %d videos for query: %s\n", len(videos), ft.query.Query)
 	if err != nil {
 		return err
 	}
-	log.Println("Got videos for query:", ft.query.Query)
 	if len(videos) == 0 {
 		log.Println("No videos found for query after")
 		return nil
@@ -60,12 +59,12 @@ func (ft *FetchQueryTask) Execute() error {
 	return ft.searchRepo.UpdateLatest(ft.query.Id, latest)
 }
 
-func (ft *FetchQueryTask) Failed() {
+func (ft *FetchQueryTask) Failed(err error) {
 	// TODO: handle failure :)
-	// log.Println("Failed to fetch query.")
+	log.Println("Failed to complete fetch task:", err)
 }
 
 func (ft *FetchQueryTask) Success() {
 	// TODO: handle success :)
-	// log.Println("Successfully fetched query.")
+	log.Println("Task completed successfully.")
 }
