@@ -58,5 +58,7 @@ GET /api/info
     - maxResults - fetched by fetcher
 
 ## Screenshots
+![image](https://github.com/sudo-nick16/fam-yt/assets/73229823/c75267fe-da51-4638-a73a-e26b4c915629)
 ![image](https://github.com/sudo-nick16/fam-yt/assets/73229823/5a2e0246-0358-4bb8-ac8c-2d849ba831c1)
+
 
