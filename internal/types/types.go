@@ -9,8 +9,8 @@ type Video struct {
 	Description string             `bson:"description" json:"description"`
 	PublishedAt primitive.DateTime `bson:"publishedAt,timestamp" json:"publishedAt"`
 	Thumbnail   string             `bson:"thumbnail" json:"thumbnail"`
-	SearchQuery string             `bson:"searchQuery,omitempty"`
-	SearchId    primitive.ObjectID `bson:"searchId,omitempty"`
+	SearchQuery string             `bson:"searchQuery,omitempty" json:"searchQuery"`
+	SearchId    primitive.ObjectID `bson:"searchId,omitempty" json:"searchId"`
 }
 
 type SearchQuery struct {
