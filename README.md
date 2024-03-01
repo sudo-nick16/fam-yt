@@ -50,3 +50,6 @@ POST /api/queries
 - Returns:
     - Success/Error message
 
+## Screenshots
+![image](https://github.com/sudo-nick16/fam-yt/assets/73229823/5a2e0246-0358-4bb8-ac8c-2d849ba831c1)
+
