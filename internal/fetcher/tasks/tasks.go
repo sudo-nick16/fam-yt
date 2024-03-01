@@ -9,7 +9,7 @@ import (
 )
 
 type FetchQueryTask struct {
-	query      *types.SearchQuery
+	query      types.SearchQuery
 	ytApi      *ytapi.YtApi
 	searchRepo *repository.SearchRepository
 	videoRepo  *repository.VideoRepository
@@ -18,7 +18,7 @@ type FetchQueryTask struct {
 func NewFetchQueryTask(ytApi *ytapi.YtApi,
 	searchRepo *repository.SearchRepository,
 	videoRepo *repository.VideoRepository,
-	query *types.SearchQuery) *FetchQueryTask {
+	query types.SearchQuery) *FetchQueryTask {
 	return &FetchQueryTask{
 		ytApi:      ytApi,
 		searchRepo: searchRepo,
@@ -28,11 +28,12 @@ func NewFetchQueryTask(ytApi *ytapi.YtApi,
 }
 
 func (ft *FetchQueryTask) Execute() error {
-	videos, err := ft.ytApi.GetLatestVideos(ft.query)
+	videos, err := ft.ytApi.GetLatestVideos(&ft.query)
 	log.Printf("Got %d videos for query: %s , err: %v\n", len(videos), ft.query.Query, err)
 	if err != nil {
 		return err
 	}
+	log.Println("Got videos for query:", ft.query.Query)
 	if len(videos) == 0 {
 		log.Println("No videos found for query after")
 		return nil

@@ -54,7 +54,8 @@ func StartFetching() {
 			}
 			log.Println("[INFO] fetched queries:", queries)
 			for _, query := range queries {
-				task := tasks.NewFetchQueryTask(ytApi, sqRepo, vidRepo, &query)
+				log.Println("[INFO] current query:", query)
+				task := tasks.NewFetchQueryTask(ytApi, sqRepo, vidRepo, query)
 				pool.AddTask(task)
 			}
 		}

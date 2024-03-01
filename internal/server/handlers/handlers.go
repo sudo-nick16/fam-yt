@@ -7,7 +7,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/sudo-nick16/fam-yt/internal/config"
-	"github.com/sudo-nick16/fam-yt/internal/fetcher/tasks"
 	"github.com/sudo-nick16/fam-yt/internal/repository"
 	"github.com/sudo-nick16/fam-yt/internal/types"
 	"github.com/sudo-nick16/fam-yt/internal/ytapi"
@@ -78,11 +77,11 @@ func CreateQuery(searchRepo *repository.SearchRepository,
 		}
 		// COMMENT: Initially, we would wait for the fetcher to do this, but
 		// for better ux we'll fetch few results immediately
-		task := tasks.NewFetchQueryTask(ytApi, searchRepo, vidRepo, sq)
+		// task := tasks.NewFetchQueryTask(ytApi, searchRepo, vidRepo, sq)
 		// COMMENT: We don't need to wait for the task to complete or fail,
 		// because the fetcher will do the same task in the background in the
 		// next interval
-		go task.Execute()
+		// go task.Execute()
 		return ctx.JSON(200, map[string]interface{}{
 			"msg":   "Query created successfully.",
 			"query": *sq,
