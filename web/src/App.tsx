@@ -28,9 +28,9 @@ function App() {
 	const [predefinedQueries, sestPredefinedQueries] = useState<Query[]>([]);
 	const [query, setQuery] = useState("");
 	const [videos, setVideos] = useState<Video[]>([]);
-	const [loading, setLoading] = useState(false);
 	const [limit, setLimit] = useState(10);
 	const [page, setPage] = useState(1);
+	const [order, setOrder] = useState("desc");
 
 	console.log({ API_URL })
 
@@ -57,9 +57,9 @@ function App() {
 		}
 	}
 
-	const fetchVideos = async (query: string, limit: number, page: number) => {
+	const fetchVideos = async (query: string, limit: number, page: number, order: string) => {
 		try {
-			const res = await fetch(`${API_URL}/api/videos?query=${query}&limit=${limit}&pageno=${page}`, {
+			const res = await fetch(`${API_URL}/api/videos?query=${query}&limit=${limit}&pageno=${page}&order=${order}`, {
 				method: "GET",
 				headers: {
 					"Content-Type": "application/json"
@@ -80,12 +80,12 @@ function App() {
 
 	const prevPage = () => {
 		if (page - 1 === 0) return;
-		fetchVideos(query, limit, page - 1);
+		fetchVideos(query, limit, page - 1, order);
 		setPage(page - 1);
 	}
 
 	const nextPage = () => {
-		fetchVideos(query, limit, page + 1);
+		fetchVideos(query, limit, page + 1, order);
 		setPage(page + 1);
 	}
 
@@ -101,13 +101,11 @@ function App() {
 				const data = await res.json();
 				if (data.queries) {
 					sestPredefinedQueries(data.queries);
-					setLoading(false);
 					return;
 				}
 				if (data.error) {
 					alert(data.error);
 				}
-				setLoading(false);
 			} catch (err) {
 				console.log("[ERROR]", err);
 			}
@@ -138,11 +136,11 @@ function App() {
 					onChange={(e) => setQuery(e.target.value)}
 					onKeyPress={(e) => {
 						if (e.key === "Enter") {
-							fetchVideos(query, limit, page);
+							fetchVideos(query, limit, page, order);
 						}
 					}}
 				/>
-				<button onClick={() => fetchVideos(query, limit, page)} className="p-2 bg-[#212121] rounded-md">
+				<button onClick={() => fetchVideos(query, limit, page, order)} className="p-2 bg-[#212121] rounded-md">
 					<img src={searchIcon} className="w-5 h-5" />
 				</button>
 				<div className="flex gap-3 items-center">
@@ -155,13 +153,15 @@ function App() {
 						onChange={(e) => setLimit(Number(e.target.value))}
 					/>
 				</div>
+				Sort by date:
 				<select
 					name="sort"
 					id="sort"
+					onChange={(e) => setOrder(e.target.value)}
 					className="outline-none rounded p-2 bg-[#212121]"
 				>
-					<option value="date">Date (Asce)</option>
-					<option value="date">Date (Desc)</option>
+					<option value="asc">Asc</option>
+					<option value="desc">Desc</option>
 				</select>
 				<datalist id="queries">
 					{

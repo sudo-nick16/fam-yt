@@ -33,7 +33,6 @@ func NewYtApi(apiKeys []string, maxResults int) (*YtApi, error) {
 		log.Fatalf("[ERROR] Could not create a new YouTube client: %v", err)
 	}
 	return &YtApi{
-		// COMMENT: Is it okay to start with the first API key?
 		currKeyIndex: 0,
 		apiKeys:      apiKeys,
 		service:      service,
@@ -46,6 +45,7 @@ func (yt *YtApi) RotateApiKey() {
 	if yt.currKeyIndex >= len(yt.apiKeys) {
 		yt.currKeyIndex %= len(yt.apiKeys)
 	}
+	log.Println("[INFO] API key rotated.")
 	yt.UpdateYtClient()
 }
 

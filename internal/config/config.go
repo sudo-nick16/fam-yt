@@ -28,7 +28,7 @@ func GetConfig() *Config {
 	config.YtApiKeys = env.GetEnvAsSlice("YT_API_KEYS", []string{}, ",")
 	config.DbName = env.GetEnv("DB_NAME", "fam-yt-dev")
 	config.PollInterval = env.GetEnvAsInt("POLL_INTERVAL", 20)
-	config.MaxResults = env.GetEnvAsInt("MAX_RESULTS", 2)
+	config.MaxResults = env.GetEnvAsInt("MAX_RESULTS", 5)
 
 	return config
 }

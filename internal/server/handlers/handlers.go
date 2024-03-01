@@ -46,7 +46,7 @@ func GetVideos(vidRepo *repository.VideoRepository) echo.HandlerFunc {
 		if order != "asc" && order != "desc" {
 			return echo.NewHTTPError(400, "Order must be 'asc' or 'desc'")
 		}
-		videos, err := vidRepo.Find(query, int64(limit), int64(page))
+		videos, err := vidRepo.Find(query, int64(limit), int64(page), order)
 		if err != nil {
 			return echo.NewHTTPError(500, "Could not fetch videos.")
 		}
