@@ -83,8 +83,9 @@ func CreateQuery(searchRepo *repository.SearchRepository,
 		// because the fetcher will do the same task in the background in the
 		// next interval
 		go task.Execute()
-		return ctx.JSON(200, map[string]string{
-			"msg": "Query created successfully.",
+		return ctx.JSON(200, map[string]interface{}{
+			"msg":   "Query created successfully.",
+			"query": *sq,
 		})
 	}
 }

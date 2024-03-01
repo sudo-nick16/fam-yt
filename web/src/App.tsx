@@ -44,13 +44,14 @@ function App() {
 				body: JSON.stringify({ query })
 			});
 			const data = await res.json();
-			if (data.query) {
-				sestPredefinedQueries([...predefinedQueries, data.query]);
-				alert("Query added successfully. Wait for a bit for the fetcher to fetch the videos.");
-				return;
-			}
 			if (data.error) {
 				alert(data.error);
+				return
+			}
+			if (data.query) {
+				sestPredefinedQueries([...predefinedQueries, data.query]);
+				fetchVideos(query, limit, page, order);
+				alert("Query added successfully.");
 			}
 		} catch (err) {
 			console.log("[ERROR]", err);
@@ -117,15 +118,24 @@ function App() {
 		<div className="flex flex-col gap-4 max-w-[800px] mx-auto py-4 items-center">
 			<div className="flex items-center justify-center gap-4">
 				<img src={ytIcon} className="w-10 h-10" />
-				<span className="text-white font-bold">Fam YT</span>
+				<span className="text-white font-bold">
+					Fam YT by
+					<a
+						className="text-white ml-2 bg-[#212121] p-1 px-2 rounded-md"
+						href="https://github.com/sudo-nick16/fam-yt"
+						target="_blank"
+					>
+						@sudonick
+					</a>
+				</span>
 			</div>
 			<div className="flex items-center gap-2 text-sm">
 				<button
 					onClick={() => addSearchQuery(query)}
 					className="flex items-center justify-center font-semibold gap-2 p-2 bg-[#212121] rounded-md"
 				>
-					<img src={addIcon} className="w-4 h-4" />
 					Add Query
+					<img src={addIcon} className="w-4 h-4" />
 				</button>
 				<input
 					type="text"
@@ -157,7 +167,11 @@ function App() {
 				<select
 					name="sort"
 					id="sort"
-					onChange={(e) => setOrder(e.target.value)}
+					value={order}
+					onChange={(e) => {
+						setOrder(e.target.value);
+						fetchVideos(query, limit, page, e.target.value);
+					}}
 					className="outline-none rounded p-2 bg-[#212121]"
 				>
 					<option value="asc">Asc</option>
@@ -171,12 +185,26 @@ function App() {
 					}
 				</datalist>
 			</div>
-			<div className="">
+			<div className="w-full flex gap-2 items-center flex-wrap">
+				Predifined Queries:
+				{
+					predefinedQueries.map(query => (
+						<p
+							key={query.id}
+							onClick={() => setQuery(query.query)}
+							className="cursor-pointer py-1 px-2 bg-[#212121] rounded-md"
+						>
+							{query.query}
+						</p>
+					))
+				}
+			</div>
+			<div className="w-full h-[calc(100vh-15rem)] bg-[#191919] border-[#242424] overflow-auto">
 				{
 					videos.map(v => (
 						<div
 							key={v.id}
-							className="text-sm gap-3 flex items-center p-2 bg-[#191919] border border-[#242424]"
+							className="w-full text-sm gap-3 flex items-center p-2 bg-[#191919] border border-[#242424]"
 						>
 							<img src={v.thumbnail} className="w-12 h-12" />
 							<div className="flex flex-col">
