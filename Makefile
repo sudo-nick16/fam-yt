@@ -1,22 +1,17 @@
 web:
 	cd web && pnpm run dev
 
-server: keys
+server: s
 	go run cmd/server/main.go
 
-fetcher:
+fetcher: f
 	go run cmd/fetcher/main.go
 
-keys: cert.pem key.pem
-
-cert.pem key.pem:
-	./scripts/generate-keys.sh
-
-build-server: 
+build-server: s
 	go build -o bin/server cmd/server/main.go
 
-build-fetcher: 
+build-fetcher: f
 	go build -o bin/fetcher cmd/fetcher/main.go
 
-server: cmd/server/main.go
-fetcher: cmd/fetcher/main.go
+s: cmd/server/main.go
+f: cmd/fetcher/main.go

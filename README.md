@@ -64,4 +64,5 @@ GET /api/info
 ![image](https://github.com/sudo-nick16/fam-yt/assets/73229823/c75267fe-da51-4638-a73a-e26b4c915629)
 ![image](https://github.com/sudo-nick16/fam-yt/assets/73229823/5a2e0246-0358-4bb8-ac8c-2d849ba831c1)
 
-
+## Architecture
+![arch](https://github.com/sudo-nick16/fam-yt/assets/73229823/c012f193-e25d-4a61-9a44-7dded35aa8af)
