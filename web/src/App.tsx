@@ -235,7 +235,11 @@ function App() {
 					predefinedQueries.map(query => (
 						<p
 							key={query.id}
-							onClick={() => setQuery(query.query)}
+							onClick={() => {
+								setQuery(query.query)
+								setPage(1)
+								fetchVideos(query.query, limit, 1, order)
+							}}
 							className="cursor-pointer py-1 px-2 bg-[#212121] rounded-md"
 						>
 							{query.query}

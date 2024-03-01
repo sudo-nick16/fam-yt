@@ -65,6 +65,7 @@ func (yt *YtApi) GetLatestVideos(query *types.SearchQuery) ([]types.Video, error
 	sl := yt.service.Search.List([]string{"id", "snippet"}).
 		Q(query.Query).
 		Order("date").
+		Type("video").
 		PublishedAfter(query.LatestPublishedAt.Time().Format(time.RFC3339)).
 		MaxResults(int64(yt.maxResults))
 
@@ -74,6 +75,7 @@ func (yt *YtApi) GetLatestVideos(query *types.SearchQuery) ([]types.Video, error
 			log.Printf("[ERROR] Quota exceeded: %v", err)
 			yt.quotaExceededCount++
 			if yt.quotaExceededCount >= len(yt.apiKeys) {
+				yt.quotaExceededCount = 0
 				return nil, errors.New("All API keys have exceeded their quota")
 			}
 			yt.RotateApiKey()
@@ -81,8 +83,7 @@ func (yt *YtApi) GetLatestVideos(query *types.SearchQuery) ([]types.Video, error
 		}
 		return nil, err
 	}
-	yt.quotaExceededCount = 0
-	videos := []types.Video{}
+	videos := make([]types.Video, 0, yt.maxResults)
 	for _, item := range resp.Items {
 		switch item.Id.Kind {
 		case "youtube#video":
@@ -90,6 +91,9 @@ func (yt *YtApi) GetLatestVideos(query *types.SearchQuery) ([]types.Video, error
 				pubAt, err := time.Parse(time.RFC3339, item.Snippet.PublishedAt)
 				if err != nil {
 					log.Printf("[ERROR] Could not parse publishedAt: %v", err)
+					continue
+				}
+				if pubAt.Before(query.LatestPublishedAt.Time()) || pubAt.Equal(query.LatestPublishedAt.Time()) {
 					continue
 				}
 				videos = append(videos, types.Video{
