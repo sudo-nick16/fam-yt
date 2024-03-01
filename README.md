@@ -14,7 +14,7 @@ You can also add new search queries from the dashboard.
 - [x] Poller and Fetcher (Used worker pool for fetching results)
 - [x] Server for serving cached results
 - [x] Api key rotation when quota exceeds
-- [x] Dashboard
+- [x] Dashboard (sort order, add new search queries, pagination, result limit)
 
 ## Tech Stack 
 - Golang (Echo Framework)
